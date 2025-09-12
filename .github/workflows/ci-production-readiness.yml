@@ -1,0 +1,46 @@
+name: CI - Production Readiness
+
+on:
+  pull_request:
+    branches: [prod]
+    paths-ignore:
+      - '*.md'
+      - '.github/workflows/**'
+
+permissions:
+  checks: write
+  contents: read
+
+jobs:
+  integration-tests:
+    name: Unit + Integration Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore VetApi.sln
+
+      - name: Build
+        run: dotnet build VetApi.sln --configuration Release --no-restore
+
+      - name: Run Unit Tests
+        run: dotnet test VetApi.UnitTests/ --configuration Release --no-build --logger trx --results-directory VetApi.UnitTests/TestResults
+
+      - name: Run Integration Tests (Testcontainers)
+        run: dotnet test VetApi.IntegrationTests/ --configuration Release --no-build --logger trx --results-directory VetApi.IntegrationTests/TestResults
+
+      - name: Publish Test Results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Unit + Integration Tests
+          path: '**/TestResults/*.trx'
+          reporter: dotnet-trx
