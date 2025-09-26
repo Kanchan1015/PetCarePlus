@@ -105,41 +105,49 @@ function AdminUserEditPage() {
 
   if (loading)
     return (
-      <section className="p-6 text-gray-600 text-lg font-medium">
+      <section className="mx-auto w-full max-w-3xl rounded-2xl bg-white p-6 ring-1 ring-slate-200 shadow-sm text-slate-600 text-lg font-medium">
         Loading...
       </section>
     );
   if (error)
     return (
-      <section className="p-6 text-red-600 text-lg font-medium">{error}</section>
+      <section className="mx-auto w-full max-w-3xl rounded-2xl bg-red-50 p-6 ring-1 ring-red-200 shadow-sm text-red-800 text-lg font-medium">
+        {error}
+      </section>
     );
-  if (!user) return <section className="p-6 text-gray-500">No user.</section>;
+  if (!user) return <section className="p-6 text-slate-500">No user.</section>;
 
   return (
-    <section className="p-6 max-w-3xl mx-auto bg-white rounded-lg shadow-md">
+    <section className="mx-auto w-full max-w-3xl rounded-2xl bg-white p-6 sm:p-8 ring-1 ring-slate-200 shadow-sm">
       <button
-        className="mb-6 text-blue-600 hover:text-blue-800 font-medium transition"
+        className="mb-6 inline-flex items-center gap-2 rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-white focus-visible:ring focus-visible:ring-indigo-500"
         onClick={() => navigate(-1)}
       >
         ← Back
       </button>
 
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">Edit User</h1>
+      <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-800 mb-6">
+        Edit User
+      </h1>
 
       <form className="space-y-6" onSubmit={onSubmit}>
         {saveMsg && (
-          <div className="p-3 bg-green-100 text-green-800 rounded">{saveMsg}</div>
+          <div className="rounded-2xl bg-green-50 px-4 py-3 text-green-800 ring-1 ring-green-200">
+            {saveMsg}
+          </div>
         )}
         {error && (
-          <div className="p-3 bg-red-100 text-red-800 rounded">{error}</div>
+          <div className="rounded-2xl bg-red-50 px-4 py-3 text-red-800 ring-1 ring-red-200">
+            {error}
+          </div>
         )}
 
         <div>
-          <label className="block text-sm font-medium mb-2 text-gray-700">
+          <label className="mb-2 block text-sm font-medium text-slate-700">
             Full Name
           </label>
           <input
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full rounded-xl border-0 px-4 py-2 ring-1 ring-slate-200 text-slate-800 placeholder:text-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             placeholder="Full name"
@@ -147,23 +155,23 @@ function AdminUserEditPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2 text-gray-700">
+          <label className="mb-2 block text-sm font-medium text-slate-700">
             Email
           </label>
           <input
             type="email"
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full rounded-xl border-0 px-4 py-2 ring-1 ring-slate-200 text-slate-800 placeholder:text-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
             value={email}
             readOnly
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2 text-gray-700">
+          <label className="mb-2 block text-sm font-medium text-slate-700">
             Account Status
           </label>
           <select
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full rounded-xl border-0 px-4 py-2 ring-1 ring-slate-200 text-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
             value={accountStatus}
             onChange={(e) =>
               setAccountStatus(e.target.value as "Active" | "Inactive")
@@ -172,14 +180,14 @@ function AdminUserEditPage() {
             <option value="Active">Active</option>
             <option value="Inactive">Inactive</option>
           </select>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="mt-1 text-xs text-slate-500">
             Note: you cannot deactivate your own admin account.
           </p>
         </div>
 
         <button
           disabled={saving}
-          className="w-full bg-blue-600 text-white rounded-lg px-6 py-3 font-medium hover:bg-blue-700 transition disabled:opacity-60"
+          className="w-full inline-flex items-center justify-center rounded-2xl bg-indigo-600 px-6 py-3 font-semibold text-white hover:bg-indigo-700 focus-visible:ring focus-visible:ring-indigo-500 disabled:opacity-60"
         >
           {saving ? "Saving..." : "Save Changes"}
         </button>

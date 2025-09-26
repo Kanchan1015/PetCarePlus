@@ -1,15 +1,14 @@
-using Microsoft.AspNetCore.Identity;              // UserManager
-using PetCare.Infrastructure.Auth;                // ApplicationUser
+using PetCare.Application.Common.Interfaces;
 
 namespace PetCare.Application.Users.Profile;
 
 public sealed class UpdateProfileCommand
 {
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IUserService _userService;
 
-    public UpdateProfileCommand(UserManager<ApplicationUser> userManager)
+    public UpdateProfileCommand(IUserService userService)
     {
-        _userManager = userManager;
+        _userService = userService;
     }
 
     // userId comes from JWT (ClaimTypes.NameIdentifier) in the controller
@@ -18,28 +17,23 @@ public sealed class UpdateProfileCommand
         UpdateProfileRequest req,
         CancellationToken ct = default)
     {
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user is null)
+        var userExists = await _userService.UserExistsAsync(userId);
+        if (!userExists)
             return (false, "not_found", null);
 
-        // Allowed updates only
-        user.FullName = req.FullName;
-        user.PhoneNumber = string.IsNullOrWhiteSpace(req.PhoneNumber) ? null : req.PhoneNumber;
+        var updated = await _userService.UpdateUserAsync(userId, req.FullName);
+        if (!updated)
+            return (false, "update_failed", null);
 
-        var res = await _userManager.UpdateAsync(user);
-        if (!res.Succeeded)
-        {
-            var why = string.Join(", ", res.Errors.Select(e => e.Description));
-            return (false, $"identity_error: {why}", null);
-        }
-
-        var roles = await _userManager.GetRolesAsync(user);
+        var fullName = await _userService.GetUserFullNameAsync(userId);
+        var roles = await _userService.GetUserRolesAsync(userId);
+        
         return (true, null, new UpdateProfileResponse
         {
-            Id = user.Id,
-            FullName = user.FullName,
-            Email = user.Email ?? string.Empty,
-            PhoneNumber = user.PhoneNumber,
+            Id = userId,
+            FullName = fullName ?? "",
+            Email = "", // Will be populated by controller from claims
+            PhoneNumber = null, // Phone number update not implemented in service yet
             Role = roles.FirstOrDefault() ?? "Owner"
         });
     }

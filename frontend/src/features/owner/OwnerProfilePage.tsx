@@ -55,21 +55,44 @@ function OwnerProfilePage() {
     setSaving(false);
   };
 
-  if (loading) return <section className="p-6">Loading...</section>;
+  if (loading)
+    return (
+      <section className="mx-auto w-full max-w-xl rounded-2xl bg-white p-6 ring-1 ring-slate-200 shadow-sm text-slate-600">
+        Loading...
+      </section>
+    );
+
   if (err && !saving)
-    return <section className="p-6 text-red-600">{err}</section>;
+    return (
+      <section className="mx-auto w-full max-w-xl rounded-2xl bg-red-50 p-6 ring-1 ring-red-200 text-red-800 shadow-sm">
+        {err}
+      </section>
+    );
 
   return (
-    <section className="p-6 max-w-xl">
-      <h1 className="text-2xl font-bold mb-4">My Profile</h1>
-      {msg && <div className="mb-3 text-green-600">{msg}</div>}
-      {err && <div className="mb-3 text-red-600">{err}</div>}
+    <section className="mx-auto w-full max-w-xl rounded-2xl bg-white p-6 sm:p-8 ring-1 ring-slate-200 shadow-sm">
+      <h1 className="mb-6 text-2xl sm:text-3xl font-bold tracking-tight text-slate-800">
+        My Profile
+      </h1>
 
-      <form className="space-y-4" onSubmit={onSubmit} noValidate>
+      {msg && (
+        <div className="mb-4 rounded-2xl bg-green-50 px-4 py-3 text-green-800 ring-1 ring-green-200">
+          {msg}
+        </div>
+      )}
+      {err && (
+        <div className="mb-4 rounded-2xl bg-red-50 px-4 py-3 text-red-800 ring-1 ring-red-200">
+          {err}
+        </div>
+      )}
+
+      <form className="space-y-5" onSubmit={onSubmit} noValidate>
         <div>
-          <label className="block text-sm font-medium mb-1">Full name</label>
+          <label className="mb-2 block text-sm font-medium text-slate-700">
+            Full name
+          </label>
           <input
-            className="w-full border rounded px-3 py-2"
+            className="w-full rounded-xl border-0 px-4 py-2 ring-1 ring-slate-200 text-slate-800 placeholder:text-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             placeholder="Your full name"
@@ -77,10 +100,12 @@ function OwnerProfilePage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Email</label>
+          <label className="mb-2 block text-sm font-medium text-slate-700">
+            Email
+          </label>
           <input
             type="email"
-            className="w-full border rounded px-3 py-2"
+            className="w-full rounded-xl border-0 px-4 py-2 ring-1 ring-slate-200 text-slate-800 placeholder:text-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
@@ -89,7 +114,7 @@ function OwnerProfilePage() {
 
         <button
           disabled={saving}
-          className="bg-blue-600 text-white rounded px-4 py-2 disabled:opacity-60"
+          className="w-full inline-flex items-center justify-center rounded-2xl bg-indigo-600 px-6 py-3 font-semibold text-white hover:bg-indigo-700 focus-visible:ring focus-visible:ring-indigo-500 disabled:opacity-60"
         >
           {saving ? "Saving..." : "Save changes"}
         </button>

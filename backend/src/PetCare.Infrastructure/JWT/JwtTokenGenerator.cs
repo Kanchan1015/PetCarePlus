@@ -46,4 +46,36 @@ public sealed class JwtTokenGenerator : IJwtTokenGenerator
         var token = new JwtSecurityTokenHandler().WriteToken(jwt);
         return (token, expires);
     }
+
+    public string GenerateToken(string userId, string email, string fullName, IList<string> roles)
+    {
+        var now = DateTime.UtcNow;
+        var expires = now.AddMinutes(_opts.AccessTokenMinutes <= 0 ? 30 : _opts.AccessTokenMinutes);
+
+        var claims = new List<Claim>
+        {
+            new(JwtRegisteredClaimNames.Sub, userId),
+            new(ClaimTypes.NameIdentifier, userId),
+            new(ClaimTypes.Name, fullName),
+            new(ClaimTypes.Email, email),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
+
+        // Add roles
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
+
+        var jwt = new JwtSecurityToken(
+            issuer: _opts.Issuer,
+            audience: _opts.Audience,
+            claims: claims,
+            notBefore: now,
+            expires: expires,
+            signingCredentials: _creds
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(jwt);
+    }
 }

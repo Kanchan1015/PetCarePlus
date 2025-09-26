@@ -49,40 +49,49 @@ export default function AdminVetDetailsPage() {
         ]}
       />
 
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+      <div className="flex items-center justify-between mb-4 gap-3">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-800">
           Vet Details
         </h1>
         <Link
           to="/admin/vets"
-          className="text-sm px-4 py-2 rounded-lg border bg-white hover:bg-gray-50"
+          className="inline-flex items-center gap-2 rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-white focus-visible:ring focus-visible:ring-indigo-500"
         >
           ← Back to list
         </Link>
       </div>
 
       {loading && (
-        <div className="bg-white border rounded-xl p-6 shadow-sm">
-          <p className="text-gray-600">Loading vet…</p>
+        <div className="rounded-2xl bg-white p-6 ring-1 ring-slate-200 shadow-sm">
+          <p className="text-slate-600">Loading vet…</p>
         </div>
       )}
 
       {!loading && error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-800">
+        <div className="rounded-2xl ring-1 ring-red-200 bg-red-50 px-4 py-3 text-red-800 shadow-sm">
           {error}
         </div>
       )}
 
       {!loading && !error && data && (
-        <div className="bg-white border rounded-xl p-6 shadow-sm space-y-4">
-          <div>
-            <div className="text-xs uppercase text-gray-500">Full name</div>
-            <div className="text-gray-900 text-lg">{data.fullName || "—"}</div>
+        <div className="rounded-2xl bg-white p-6 ring-1 ring-slate-200 shadow-sm">
+          <div className="grid sm:grid-cols-2 gap-6">
+            <div>
+              <div className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                Full name
+              </div>
+              <div className="text-lg text-slate-800">
+                {data.fullName || "—"}
+              </div>
+            </div>
+            <div>
+              <div className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                Email
+              </div>
+              <div className="text-slate-800">{data.email || "—"}</div>
+            </div>
           </div>
-          <div>
-            <div className="text-xs uppercase text-gray-500">Email</div>
-            <div className="text-gray-900">{data.email || "—"}</div>
-          </div>
+
           {/* future: actions (reset password, deactivate, etc.) */}
         </div>
       )}

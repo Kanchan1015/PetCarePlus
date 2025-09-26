@@ -50,13 +50,17 @@ export default function AdminVetListPage() {
 
   return (
     <AdminLayout>
-      <Breadcrumbs items={[{ label: "Admin", to: "/admin" }, { label: "Vets" }]} />
+      <Breadcrumbs
+        items={[{ label: "Admin", to: "/admin" }, { label: "Vets" }]}
+      />
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
-        <h1 className="text-2xl sm:text-3xl font-bold text-blue-800">Veterinary Doctors </h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-800">
+          Veterinary Doctors
+        </h1>
         <Link
           to="/admin/vets/new"
-          className="text-sm px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow"
+          className="inline-flex items-center gap-2 text-sm rounded-2xl bg-indigo-600 px-4 py-2 font-semibold text-white hover:bg-indigo-700 focus-visible:ring focus-visible:ring-indigo-500"
         >
           + Create Vet
         </Link>
@@ -70,13 +74,13 @@ export default function AdminVetListPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name or email…"
-            className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400"
+            className="w-full rounded-xl border-0 ring-1 ring-slate-200 px-3 py-2 text-slate-800 placeholder:text-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
           />
           {search && (
             <button
               type="button"
               onClick={() => setSearch("")}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800"
+              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md px-2 py-1 text-slate-500 hover:bg-slate-100 hover:text-slate-700 focus-visible:ring focus-visible:ring-indigo-500"
               aria-label="Clear search"
             >
               ✕
@@ -84,7 +88,7 @@ export default function AdminVetListPage() {
           )}
         </div>
 
-        <div className="flex items-center gap-2 text-sm text-gray-700">
+        <div className="flex items-center gap-2 text-sm text-slate-700">
           <div>
             Showing <span className="font-medium">{items.length}</span> of{" "}
             <span className="font-medium">{total}</span>
@@ -94,7 +98,7 @@ export default function AdminVetListPage() {
           </label>
           <select
             id="ps"
-            className="border rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-400"
+            className="rounded-lg border-0 ring-1 ring-slate-200 px-2 py-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
             value={pageSize}
             onChange={(e) => {
               const next = Number(e.target.value);
@@ -116,26 +120,28 @@ export default function AdminVetListPage() {
 
       {/* Error */}
       {!loading && error && (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-800 shadow">
+        <div className="rounded-2xl ring-1 ring-red-200 bg-red-50 p-4 text-red-800 shadow-sm">
           {error}
         </div>
       )}
 
       {/* Empty */}
       {!loading && !error && items.length === 0 && (
-        <div className="bg-white border rounded-xl p-6 shadow-sm">
-          <p className="text-gray-700">No vets found.</p>
+        <div className="rounded-2xl bg-white p-6 ring-1 ring-slate-200 shadow-sm">
+          <p className="text-slate-700">No vets found.</p>
           {debouncedSearch && (
-            <p className="text-gray-500 text-sm mt-1">Try clearing the search.</p>
+            <p className="text-slate-500 text-sm mt-1">
+              Try clearing the search.
+            </p>
           )}
         </div>
       )}
 
       {/* Table */}
       {!loading && !error && items.length > 0 && (
-        <div className="bg-white border rounded-xl shadow overflow-hidden">
-          <table className="min-w-full text-left text-gray-700">
-            <thead className="bg-blue-50 text-gray-600">
+        <div className="rounded-2xl bg-white ring-1 ring-slate-200 shadow-sm overflow-hidden">
+          <table className="min-w-full text-left text-slate-700">
+            <thead className="bg-slate-50 text-slate-600">
               <tr>
                 <th className="px-6 py-3 font-medium">Full Name</th>
                 <th className="px-6 py-3 font-medium">Email</th>
@@ -143,11 +149,14 @@ export default function AdminVetListPage() {
             </thead>
             <tbody>
               {items.map((v) => (
-                <tr key={v.id} className="border-t hover:bg-blue-50 transition">
+                <tr
+                  key={v.id}
+                  className="border-t border-slate-200/70 hover:bg-slate-50 transition"
+                >
                   <td className="px-6 py-3">
                     <Link
                       to={`/admin/vets/${v.id}`}
-                      className="text-blue-600 hover:underline"
+                      className="text-indigo-700 hover:underline"
                     >
                       {v.fullName || "—"}
                     </Link>
@@ -159,22 +168,24 @@ export default function AdminVetListPage() {
           </table>
 
           {/* Pagination */}
-          <div className="flex items-center justify-between px-6 py-3 border-t text-gray-700 text-sm">
+          <div className="flex items-center justify-between px-6 py-3 border-t border-slate-200/70 text-slate-700 text-sm">
             <div>
               Page <span className="font-medium">{page}</span> of{" "}
               <span className="font-medium">{totalPages}</span>
-              {debouncedSearch && <span className="ml-2 text-gray-500">(filtered)</span>}
+              {debouncedSearch && (
+                <span className="ml-2 text-slate-500">(filtered)</span>
+              )}
             </div>
             <div className="flex items-center gap-2">
               <button
-                className="px-3 py-1 rounded border bg-white hover:bg-gray-50 disabled:opacity-50"
+                className="rounded-2xl border border-slate-300 bg-white px-3 py-1 hover:bg-white focus-visible:ring focus-visible:ring-indigo-500 disabled:opacity-50"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={!canPrev}
               >
                 Prev
               </button>
               <button
-                className="px-3 py-1 rounded border bg-white hover:bg-gray-50 disabled:opacity-50"
+                className="rounded-2xl border border-slate-300 bg-white px-3 py-1 hover:bg-white focus-visible:ring focus-visible:ring-indigo-500 disabled:opacity-50"
                 onClick={() => setPage((p) => (canNext ? p + 1 : p))}
                 disabled={!canNext}
               >
@@ -190,12 +201,12 @@ export default function AdminVetListPage() {
 
 function CardSkeleton() {
   return (
-    <div className="bg-white border rounded-xl p-6 shadow-sm mb-4">
-      <p className="text-gray-600 mb-3">Loading vets…</p>
+    <div className="rounded-2xl bg-white p-6 ring-1 ring-slate-200 shadow-sm mb-4">
+      <p className="text-slate-600 mb-3">Loading vets…</p>
       <div className="space-y-2">
-        <div className="animate-pulse h-4 bg-gray-200 rounded w-1/3" />
-        <div className="animate-pulse h-4 bg-gray-200 rounded w-1/2" />
-        <div className="animate-pulse h-4 bg-gray-200 rounded w-1/4" />
+        <div className="animate-pulse h-4 bg-slate-200 rounded w-1/3" />
+        <div className="animate-pulse h-4 bg-slate-200 rounded w-1/2" />
+        <div className="animate-pulse h-4 bg-slate-200 rounded w-1/4" />
       </div>
     </div>
   );

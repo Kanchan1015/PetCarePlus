@@ -1,18 +1,16 @@
-using Microsoft.AspNetCore.Identity;              // UserManager, role APIs
 using PetCare.Domain.Users;                       // AccountStatus
-using PetCare.Infrastructure.Auth;                // ApplicationUser
-using PetCare.Infrastructure.Jwt;                 // IJwtTokenGenerator
+using PetCare.Application.Common.Interfaces;      // IJwtTokenGenerator, IUserService
 
 namespace PetCare.Application.Auth.Login;
 
 public sealed class LoginQuery
 {
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IUserService _userService;
     private readonly IJwtTokenGenerator _tokens;
 
-    public LoginQuery(UserManager<ApplicationUser> userManager, IJwtTokenGenerator tokens)
+    public LoginQuery(IUserService userService, IJwtTokenGenerator tokens)
     {
-        _userManager = userManager;
+        _userService = userService;
         _tokens = tokens;
     }
 
@@ -20,37 +18,29 @@ public sealed class LoginQuery
         LoginRequest request,
         CancellationToken ct = default)
     {
-        // 1) Find user by email
-        var user = await _userManager.FindByEmailAsync(request.Email);
-        if (user is null)
-            return (false, "invalid_credentials", null);
+        // 1) Validate user credentials
+        var (success, userId, errorMessage) = await _userService.ValidateUserCredentialsAsync(request.Email, request.Password);
+        if (!success || string.IsNullOrEmpty(userId))
+            return (false, errorMessage ?? "invalid_credentials", null);
 
-        // 2) Check account status
-        if (user.AccountStatus != AccountStatus.Active)
-            return (false, "inactive", null);
-
-        // 3) Verify password
-        //    ASP.NET Identity handles hashing internally when comparing.
-        var passwordOk = await _userManager.CheckPasswordAsync(user, request.Password);
-        if (!passwordOk)
-            return (false, "invalid_credentials", null);
-
-        // 4) Role & token
-        var roles = await _userManager.GetRolesAsync(user);
+        // 2) Get user details
+        var fullName = await _userService.GetUserFullNameAsync(userId);
+        var roles = await _userService.GetUserRolesAsync(userId);
         var role = roles.FirstOrDefault() ?? "Owner";
 
-        var (token, expiresAtUtc) = _tokens.Create(user, role);
+        // 3) Generate token
+        var token = _tokens.GenerateToken(userId, request.Email, fullName ?? "", roles);
 
         var response = new LoginResponse
         {
             AccessToken = token,
-            ExpiresAt = expiresAtUtc,
+            ExpiresAt = DateTime.UtcNow.AddHours(2), // Set appropriate expiry
             User = new LoginResponse.UserDto
             {
-                Id = user.Id,
+                Id = userId,
                 Role = role,
-                FullName = user.FullName,
-                Email = user.Email ?? string.Empty
+                FullName = fullName ?? "",
+                Email = request.Email
             }
         };
 

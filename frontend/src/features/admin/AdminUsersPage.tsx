@@ -44,7 +44,9 @@ export default function AdminUsersPage() {
   async function onToggleActive(u: UserListItem) {
     const nextActive = !u.isActive;
     const verb = nextActive ? "activate" : "deactivate";
-    if (!confirm(`Are you sure you want to ${verb} "${u.fullName ?? u.email}"?`))
+    if (
+      !confirm(`Are you sure you want to ${verb} "${u.fullName ?? u.email}"?`)
+    )
       return;
 
     try {
@@ -100,11 +102,13 @@ export default function AdminUsersPage() {
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
-        <h1 className="text-2xl sm:text-3xl font-bold text-blue-800">Users</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-800">
+          Users
+        </h1>
         <div className="flex gap-3">
           <button
             onClick={() => navigate(-1)}
-            className="px-4 py-2 rounded-lg border bg-white hover:bg-gray-50 text-gray-700 shadow text-sm"
+            className="inline-flex items-center gap-2 rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-white focus-visible:ring focus-visible:ring-indigo-500"
           >
             ← Back
           </button>
@@ -113,30 +117,30 @@ export default function AdminUsersPage() {
 
       {/* Loading */}
       {loading && (
-        <div className="bg-white border rounded-xl p-6 shadow-sm mb-4">
-          <p className="text-gray-600">Loading users…</p>
+        <div className="rounded-2xl bg-white p-6 ring-1 ring-slate-200 shadow-sm mb-4">
+          <p className="text-slate-600">Loading users…</p>
         </div>
       )}
 
       {/* Error */}
       {!loading && error && (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-800 shadow">
+        <div className="rounded-2xl ring-1 ring-red-200 bg-red-50 p-4 text-red-800 shadow-sm">
           {error}
         </div>
       )}
 
       {/* Empty */}
       {!loading && !error && users.length === 0 && (
-        <div className="bg-white border rounded-xl p-6 shadow-sm">
-          <p className="text-gray-700">No users found.</p>
+        <div className="rounded-2xl bg-white p-6 ring-1 ring-slate-200 shadow-sm">
+          <p className="text-slate-700">No users found.</p>
         </div>
       )}
 
       {/* Table */}
       {!loading && !error && users.length > 0 && (
-        <div className="bg-white border rounded-xl shadow overflow-hidden">
-          <table className="min-w-full text-left text-gray-700">
-            <thead className="bg-blue-50 text-gray-600">
+        <div className="rounded-2xl bg-white ring-1 ring-slate-200 shadow-sm overflow-hidden">
+          <table className="min-w-full text-left text-slate-700">
+            <thead className="bg-slate-50 text-slate-600">
               <tr>
                 <th className="px-6 py-3 font-medium">Full Name</th>
                 <th className="px-6 py-3 font-medium">Email</th>
@@ -149,42 +153,47 @@ export default function AdminUsersPage() {
               {users.map((u) => (
                 <tr
                   key={u.id}
-                  className="border-t hover:bg-blue-50 transition"
+                  className="border-t border-slate-200/70 hover:bg-slate-50 transition"
                 >
                   <td className="px-6 py-3">{u.fullName || "—"}</td>
                   <td className="px-6 py-3">{u.email || "—"}</td>
                   <td className="px-6 py-3">{u.roles.join(", ")}</td>
                   <td className="px-6 py-3">
                     <span
-                      className={`px-2 py-1 rounded text-white text-sm ${
-                        u.isActive ? "bg-green-500" : "bg-red-500"
+                      className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium ring-1 ${
+                        u.isActive
+                          ? "bg-green-50 text-green-700 ring-green-200"
+                          : "bg-red-50 text-red-700 ring-red-200"
                       }`}
                     >
+                      <span
+                        className={`h-1.5 w-1.5 rounded-full ${
+                          u.isActive ? "bg-green-600" : "bg-red-600"
+                        }`}
+                      />
                       {u.isActive ? "Active" : "Inactive"}
                     </span>
                   </td>
-                  <td className="px-6 py-3 flex gap-3">
-                    <Link
-                      to={`/admin/users/${u.id}`}
-                      className="px-3 py-1 rounded-lg text-sm text-white shadow bg-yellow-500 hover:bg-yellow-600"
-                    >
-                      Edit
-                    </Link>
-                    <button
-                      onClick={() => onToggleActive(u)}
-                      disabled={busyId === u.id}
-                      className={`px-3 py-1 rounded-lg text-sm text-white shadow ${
-                        u.isActive
-                          ? "bg-amber-600 hover:bg-amber-700"
-                          : "bg-green-600 hover:bg-green-700"
-                      } disabled:opacity-60`}
-                    >
-                      {busyId === u.id
-                        ? "Saving..."
-                        : u.isActive
-                        ? "Deactivate"
-                        : "Activate"}
-                    </button>
+                  <td className="px-6 py-3">
+                    <div className="flex flex-wrap gap-2">
+                      <Link
+                        to={`/admin/users/${u.id}`}
+                        className="inline-flex items-center rounded-2xl border border-slate-300 bg-white px-3 py-1 text-sm font-medium text-slate-700 hover:bg-white focus-visible:ring focus-visible:ring-indigo-500"
+                      >
+                        Edit
+                      </Link>
+                      <button
+                        onClick={() => onToggleActive(u)}
+                        disabled={busyId === u.id}
+                        className="inline-flex items-center rounded-2xl bg-indigo-600 px-3 py-1 text-sm font-semibold text-white hover:bg-indigo-700 focus-visible:ring focus-visible:ring-indigo-500 disabled:opacity-60"
+                      >
+                        {busyId === u.id
+                          ? "Saving..."
+                          : u.isActive
+                          ? "Deactivate"
+                          : "Activate"}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

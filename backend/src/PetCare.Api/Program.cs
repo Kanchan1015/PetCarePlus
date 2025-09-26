@@ -5,10 +5,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using System.Security.Claims;  // <— needed for ClaimTypes
+using MediatR;
 
 using PetCare.Infrastructure.Auth;          // ApplicationUser, RoleSeeder
 using PetCare.Infrastructure.Jwt;           // JwtOptions, JwtTokenGenerator
 using PetCare.Infrastructure.Persistence;   // PetCareDbContext
+using PetCare.Infrastructure.Persistence.Repositories;  // PetRepository
+using PetCare.Application.Common.Interfaces; // IPetRepository
+using PetCare.Infrastructure.Services; // UserService
 
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -70,7 +74,22 @@ builder.Services.AddSwaggerGen(c =>
 
 // ---------- JWT ----------
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
-builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+builder.Services.AddScoped<PetCare.Infrastructure.Jwt.IJwtTokenGenerator, JwtTokenGenerator>();
+builder.Services.AddScoped<PetCare.Application.Common.Interfaces.IJwtTokenGenerator>(provider => 
+    provider.GetRequiredService<PetCare.Infrastructure.Jwt.IJwtTokenGenerator>());
+
+// ---------- Repositories ----------
+builder.Services.AddScoped<IPetRepository, PetRepository>();
+// builder.Services.AddScoped<IMedicalRecordRepository, MedicalRecordRepository>();
+// builder.Services.AddScoped<IVaccinationRepository, VaccinationRepository>();
+// builder.Services.AddScoped<ITreatmentRepository, TreatmentRepository>();
+// builder.Services.AddScoped<IPrescriptionRepository, PrescriptionRepository>();
+
+// ---------- Services ----------
+builder.Services.AddScoped<IUserService, PetCare.Infrastructure.Services.UserService>();
+
+// ---------- MediatR ----------
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(PetCare.Application.Pets.Commands.CreatePet.CreatePetCommand).Assembly));
 
 // Handlers
 builder.Services.AddScoped<PetCare.Application.Users.Profile.UpdateProfileCommand>();
@@ -147,3 +166,6 @@ app.MapControllers();
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
 app.Run();
+
+// Make Program class accessible for integration tests
+public partial class Program { }

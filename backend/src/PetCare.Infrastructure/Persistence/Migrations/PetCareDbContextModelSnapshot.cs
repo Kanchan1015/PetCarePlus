@@ -164,13 +164,24 @@ namespace PetCare.Infrastructure.Persistence.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("varchar(60)");
 
-                    b.Property<DateTime?>("Dob")
+                    b.Property<string>("Color")
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DateOfBirth")
                         .HasColumnType("datetime(6)");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("tinyint(1)")
                         .HasDefaultValue(true);
+
+                    b.Property<string>("MedicalNotes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -181,10 +192,14 @@ namespace PetCare.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(255)");
 
-                    b.Property<string>("Species")
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("varchar(40)");
+                    b.Property<int>("Species")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<decimal?>("Weight")
+                        .HasColumnType("decimal(5,2)");
 
                     b.HasKey("Id");
 

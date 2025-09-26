@@ -31,14 +31,18 @@ public class PetCareDbContext : IdentityDbContext<ApplicationUser>
         builder.Entity<Pet>(b =>
         {
             b.Property(p => p.Name).HasMaxLength(60).IsRequired();
-            b.Property(p => p.Species).HasMaxLength(40).IsRequired();
+            b.Property(p => p.Species).HasConversion<int>().IsRequired();
             b.Property(p => p.Breed).HasMaxLength(60);
+            b.Property(p => p.Color).HasMaxLength(30);
+            b.Property(p => p.Weight).HasColumnType("decimal(5,2)");
+            b.Property(p => p.MedicalNotes).HasMaxLength(1000);
             b.Property(p => p.IsActive).HasDefaultValue(true);
+            b.Property(p => p.CreatedAt).IsRequired();
 
             // Owner FK (string)
             b.HasIndex(p => p.OwnerUserId);
             b.HasOne<ApplicationUser>()
-                .WithMany() // later you can add navigation if needed
+                .WithMany() // No navigation property to avoid circular dependencies
                 .HasForeignKey(p => p.OwnerUserId)
                 .OnDelete(DeleteBehavior.Restrict); // keep pets if user is disabled
         });

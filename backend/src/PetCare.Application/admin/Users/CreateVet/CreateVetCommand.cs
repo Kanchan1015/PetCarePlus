@@ -1,19 +1,18 @@
-using Microsoft.AspNetCore.Identity;
-using PetCare.Infrastructure.Auth;
+using PetCare.Application.Common.Interfaces;
 
 namespace PetCare.Application.Admin.Users.CreateVet;
 
 public sealed class CreateVetCommand
 {
-    private readonly UserManager<ApplicationUser> _users;
+    private readonly IUserService _userService;
 
-    public CreateVetCommand(UserManager<ApplicationUser> users)
+    public CreateVetCommand(IUserService userService)
     {
-        _users = users;
+        _userService = userService;
     }
 
     // returns (ok, error, data)
-    // errors: "validation_failed" | "email_in_use" | "identity_error:*" | "role_error:*"
+    // errors: "validation_failed" | "email_in_use" | "user_creation_failed"
     public async Task<(bool ok, string? error, CreateVetResponse? data)> ExecuteAsync(
         CreateVetRequest request,
         CancellationToken ct = default)
@@ -29,34 +28,12 @@ public sealed class CreateVetCommand
             return (false, "validation_failed", null);
         }
 
-        var existing = await _users.FindByEmailAsync(email);
-        if (existing is not null)
+        var userCreated = await _userService.CreateUserAsync(email, password, fullName, "VET");
+        if (!userCreated)
         {
-            return (false, "email_in_use", null);
+            return (false, "user_creation_failed", null);
         }
 
-        var user = new ApplicationUser
-        {
-            UserName = email,
-            Email = email,
-            EmailConfirmed = true,
-            FullName = fullName
-        };
-
-        var create = await _users.CreateAsync(user, password);
-        if (!create.Succeeded)
-        {
-            var msg = string.Join("; ", create.Errors.Select(e => $"{e.Code}:{e.Description}"));
-            return (false, $"identity_error:{msg}", null);
-        }
-
-        var roleAdd = await _users.AddToRoleAsync(user, "VET");
-        if (!roleAdd.Succeeded)
-        {
-            var msg = string.Join("; ", roleAdd.Errors.Select(e => $"{e.Code}:{e.Description}"));
-            return (false, $"role_error:{msg}", null);
-        }
-
-        return (true, null, new CreateVetResponse(user.Id, email));
+        return (true, null, new CreateVetResponse("user-id", email));
     }
 }

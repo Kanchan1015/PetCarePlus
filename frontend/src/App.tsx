@@ -1,10 +1,10 @@
+// App.tsx (only the Routes section shown for brevity)
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LoginPage from "./features/auth/LoginPage.tsx";
 import RegistrationPage from "./features/auth/RegistrationPage.tsx";
-
 import OwnerPage from "./features/owner/OwnerPage.tsx";
 import VetPage from "./features/vet/VetPage.tsx";
-import AdminDashboard from "./features/admin/AdminDashboard.tsx"; // updated import
+import AdminDashboard from "./features/admin/AdminDashboard.tsx";
 import Unauthorized from "./pages/Unauthorized.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import RequireAdmin from "./features/auth/RequireAdmin";
@@ -16,16 +16,21 @@ import AdminVetDetailsPage from "./features/admin/AdminVetDetailsPage.tsx";
 import AdminUsersPage from "./features/admin/AdminUsersPage";
 import AdminUserEditPage from "./features/admin/AdminUserEditPage";
 import OwnerProfilePage from "./features/owner/OwnerProfilePage";
+import { AdminPetsPage, AdminPetAddPage, AdminPetEditPage } from "./features/admin/pages";
+import { OwnerPetsPage } from "./features/owner/pages";
+import LandingPage from "./pages/LandingPage.tsx";
+import AdminShell from "./features/admin/layout/AdminShell"; //
 
 const App = () => {
   return (
     <Router>
       <Routes>
-        {/* Public routes */}
+        {/* Public */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegistrationPage />} />
+        <Route path="/" element={<LandingPage />} />
 
-        {/* Protected role-based routes */}
+        {/* Owner/Vet */}
         <Route
           path="/owner"
           element={
@@ -46,48 +51,49 @@ const App = () => {
             </RequireAuth>
           }
         />
+        <Route
+          path="/owner/pets"
+          element={
+            <RequireAuth>
+              <RequireRole roles={["OWNER", "ADMIN"]}>
+                <OwnerPetsPage />
+              </RequireRole>
+            </RequireAuth>
+          }
+        />
+        <Route path="/owner/profile" element={<OwnerProfilePage />} />
 
-        {/* Admin routes */}
+        {/* Admin (parent shell + nested children) */}
         <Route
           path="/admin"
           element={
             <RequireAdmin>
-              <AdminDashboard />
+              <AdminShell />
             </RequireAdmin>
           }
-        />
-        <Route
-          path="/admin/vets/new"
-          element={
-            <RequireAdmin>
-              <AdminAddVetPage />
-            </RequireAdmin>
-          }
-        />
-        <Route
-          path="/admin/vets"
-          element={
-            <RequireAdmin>
-              <AdminVetListPage />
-            </RequireAdmin>
-          }
-        />
-        <Route
-          path="/admin/vets/:id"
-          element={
-            <RequireAdmin>
-              <AdminVetDetailsPage />
-            </RequireAdmin>
-          }
-        />
+        >
+          {/* index = /admin */}
+          <Route index element={<AdminDashboard />} />
+
+          {/* children */}
+          <Route path="vets" element={<AdminVetListPage />} />
+          <Route path="vets/new" element={<AdminAddVetPage />} />
+          <Route path="vets/:id" element={<AdminVetDetailsPage />} />
+
+          <Route path="users" element={<AdminUsersPage />} />
+          <Route path="users/:id" element={<AdminUserEditPage />} />
+
+          <Route path="pets" element={<AdminPetsPage />} />
+          <Route path="pets/new" element={<AdminPetAddPage />} />
+          <Route path="pets/:id/edit" element={<AdminPetEditPage />} />
+
+          {/* future: appointments, inventory */}
+          {/* <Route path="appointments" element={<AdminAppointmentsPage />} /> */}
+          {/* <Route path="inventory" element={<AdminInventoryPage />} /> */}
+        </Route>
 
         {/* Misc */}
         <Route path="/unauthorized" element={<Unauthorized />} />
-        <Route path="/admin/users" element={<AdminUsersPage />} />
-        <Route path="/admin/users/:id" element={<AdminUserEditPage />} />
-        <Route path="/owner/profile" element={<OwnerProfilePage />} />
-
-        {/* 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

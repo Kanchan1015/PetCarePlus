@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 
 // tiny local helper — you can move this to src/features/auth/api.ts later
 const BASE = (import.meta as any).env?.VITE_API_BASE_URL as string | undefined;
@@ -104,162 +105,222 @@ function RegistrationPage() {
   };
 
   return (
-    <section className="bg-white min-h-screen flex flex-col sm:flex-row">
-      <div className="hidden sm:flex w-1/2 items-center justify-end pl-4 pr-4">
-        <img
-          src="./Petcare_cover_image.jpg"
-          alt="Login illustration"
-          className="w-4/5 h-auto max-h-[70%] object-contain rounded-xl"
-        />
+    <main className="relative min-h-screen bg-gradient-to-b from-white via-slate-50 to-white text-slate-800">
+      {/* decorative blobs */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-indigo-200/40 blur-3xl" />
+        <div className="absolute left-1/4 top-1/3 h-72 w-72 rounded-full bg-blue-200/40 blur-3xl" />
       </div>
 
-      <div className="w-full sm:w-1/2 flex items-center justify-center p-4 sm:p-8">
-        <div className="w-full max-w-2xl bg-white rounded-xl shadow-md border p-6 sm:p-8">
-          <a
-            href="#"
-            className="flex items-center mb-8 text-5xl font-bold text-gray-900"
-          >
-            <img className="w-16 h-16 mr-3" src="./logo.jpg" alt="logo" />
-            PetCare+
+      <header className="sticky top-0 z-40 border-b border-slate-200/60 backdrop-blur supports-[backdrop-filter]:bg-white/70">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <a href="/" className="flex items-center gap-2 group">
+            {/* optional: replace with <PawPrint className="h-6 w-6 text-indigo-600" /> if you're importing icons */}
+            <img
+              src="./logo.jpg"
+              alt="logo"
+              className="h-8 w-8 rounded-lg ring-1 ring-slate-200"
+            />
+            <span className="font-semibold tracking-tight">
+              VetCare+ Hospital
+            </span>
           </a>
-
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
-            Create an account
-          </h1>
-
-          <form className="space-y-5" onSubmit={onSubmit} noValidate>
-            {formError && (
-              <div className="text-red-600 text-sm">{formError}</div>
-            )}
-
-            <div>
-              <label
-                htmlFor="full-name"
-                className="block mb-2 text-sm font-medium text-gray-900"
-              >
-                Full name
-              </label>
-              <input
-                type="text"
-                id="full-name"
-                placeholder="Full Name"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
-                  focus:ring-blue-600 focus:border-blue-600 block w-full p-3"
-                required
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="email"
-                className="block mb-2 text-sm font-medium text-gray-900"
-              >
-                Your email
-              </label>
-              <input
-                type="email"
-                id="email"
-                placeholder="example@email.com"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
-                  focus:ring-blue-600 focus:border-blue-600 block w-full p-3"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              {emailError && (
-                <p className="mt-1 text-xs text-red-600">{emailError}</p>
-              )}
-            </div>
-
-            <div>
-              <label
-                htmlFor="password"
-                className="block mb-2 text-sm font-medium text-gray-900"
-              >
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                placeholder="••••••••"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
-                  focus:ring-blue-600 focus:border-blue-600 block w-full p-3"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="confirm-password"
-                className="block mb-2 text-sm font-medium text-gray-900"
-              >
-                Confirm password
-              </label>
-              <input
-                type="password"
-                id="confirm-password"
-                placeholder="••••••••"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
-                  focus:ring-blue-600 focus:border-blue-600 block w-full p-3"
-                required
-                value={confirm}
-                onChange={(e) => setConfirm(e.target.value)}
-              />
-              {passwordError && (
-                <p className="mt-1 text-xs text-red-600">{passwordError}</p>
-              )}
-            </div>
-
-            <div className="flex items-start">
-              <input
-                id="terms"
-                type="checkbox"
-                className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-blue-300"
-                checked={agree}
-                onChange={(e) => setAgree(e.target.checked)}
-                required
-              />
-              <label
-                htmlFor="terms"
-                className="ml-2 text-sm font-light text-gray-500"
-              >
-                I accept the{" "}
-                <a
-                  href="#"
-                  className="font-medium text-blue-600 hover:underline"
-                >
-                  Terms and Conditions
-                </a>
-              </label>
-            </div>
-
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-60
-                focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg
-                text-sm px-5 py-3 text-center"
+          <div className="hidden sm:flex items-center gap-3">
+            <a
+              href="/login"
+              className="px-4 py-2 text-sm font-medium rounded-xl hover:bg-slate-100 focus-visible:ring focus-visible:ring-indigo-500"
             >
-              {submitting ? "Creating account..." : "Create an account"}
-            </button>
-
-            <p className="text-sm font-light text-gray-500 text-center">
-              Already have an account?{" "}
-              <a
-                href="/login"
-                className="font-medium text-blue-600 hover:underline"
-              >
-                Login here
-              </a>
-            </p>
-          </form>
+              Log in
+            </a>
+            <a
+              href="/"
+              className="px-4 py-2 text-sm font-medium rounded-xl hover:bg-slate-100 focus-visible:ring focus-visible:ring-indigo-500"
+            >
+              Home
+            </a>
+          </div>
         </div>
-      </div>
-    </section>
+      </header>
+
+      <section className="relative">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-10 lg:gap-16 py-10 lg:py-16 items-center">
+          {/* Left visual */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="hidden lg:block"
+          >
+            <div className="aspect-[4/3] w-full overflow-hidden rounded-3xl shadow-xl ring-1 ring-slate-200">
+              <img
+                src="./Petcare_cover_image.jpg"
+                alt="Veterinary care illustration"
+                className="h-full w-full object-cover"
+                loading="eager"
+              />
+            </div>
+          </motion.div>
+
+          {/* Right form card */}
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="w-full"
+          >
+            <div className="rounded-2xl bg-white p-6 sm:p-8 ring-1 ring-slate-200 shadow-xl">
+              {/* brand */}
+              <a href="/" className="flex items-center gap-2">
+                <img
+                  className="w-10 h-10 rounded-lg ring-1 ring-slate-200"
+                  src="./logo.jpg"
+                  alt="logo"
+                />
+                <span className="text-xl font-bold">PetCare+</span>
+              </a>
+
+              <h1 className="mt-6 text-2xl sm:text-3xl font-extrabold tracking-tight">
+                Create an account
+              </h1>
+              <p className="mt-2 text-slate-600">
+                Join VetCare+ to book visits, manage pets, and view records
+                anytime.
+              </p>
+
+              <form className="mt-6 space-y-5" onSubmit={onSubmit} noValidate>
+                {formError && (
+                  <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                    {formError}
+                  </div>
+                )}
+
+                <div>
+                  <label
+                    htmlFor="full-name"
+                    className="block text-sm font-medium text-slate-700"
+                  >
+                    Full name
+                  </label>
+                  <input
+                    type="text"
+                    id="full-name"
+                    placeholder="Full Name"
+                    className="mt-2 block w-full rounded-xl bg-white px-3 py-3 text-sm text-slate-900 ring-1 ring-slate-200 border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    required
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-slate-700"
+                  >
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    placeholder="you@example.com"
+                    className="mt-2 block w-full rounded-xl bg-white px-3 py-3 text-sm text-slate-900 ring-1 ring-slate-200 border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                  {emailError && (
+                    <p className="mt-1 text-xs text-red-600">{emailError}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="password"
+                    className="block text-sm font-medium text-slate-700"
+                  >
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    id="password"
+                    placeholder="••••••••"
+                    className="mt-2 block w-full rounded-xl bg-white px-3 py-3 text-sm text-slate-900 ring-1 ring-slate-200 border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="confirm-password"
+                    className="block text-sm font-medium text-slate-700"
+                  >
+                    Confirm password
+                  </label>
+                  <input
+                    type="password"
+                    id="confirm-password"
+                    placeholder="••••••••"
+                    className="mt-2 block w-full rounded-xl bg-white px-3 py-3 text-sm text-slate-900 ring-1 ring-slate-200 border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    required
+                    value={confirm}
+                    onChange={(e) => setConfirm(e.target.value)}
+                  />
+                  {passwordError && (
+                    <p className="mt-1 text-xs text-red-600">{passwordError}</p>
+                  )}
+                </div>
+
+                <div className="flex items-start">
+                  <input
+                    id="terms"
+                    type="checkbox"
+                    className="mt-1 h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                    checked={agree}
+                    onChange={(e) => setAgree(e.target.checked)}
+                    required
+                  />
+                  <label
+                    htmlFor="terms"
+                    className="ml-2 text-sm text-slate-600"
+                  >
+                    I accept the{" "}
+                    <a
+                      href="#"
+                      className="font-medium text-indigo-700 hover:underline"
+                    >
+                      Terms and Conditions
+                    </a>
+                  </label>
+                </div>
+
+                {/* Primary + Secondary CTAs */}
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="flex-1 rounded-2xl bg-indigo-600 px-5 py-3 text-white text-sm font-semibold hover:bg-indigo-700 focus-visible:ring focus-visible:ring-indigo-500 disabled:opacity-60"
+                  >
+                    {submitting ? "Creating account..." : "Create account"}
+                  </button>
+                </div>
+
+                <p className="text-sm text-slate-600 text-center">
+                  Already have an account?{" "}
+                  <a
+                    href="/login"
+                    className="font-medium text-indigo-700 hover:underline"
+                  >
+                    Log in
+                  </a>
+                </p>
+              </form>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+    </main>
   );
 }
 
