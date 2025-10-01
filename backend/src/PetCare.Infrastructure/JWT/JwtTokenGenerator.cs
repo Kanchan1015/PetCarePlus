@@ -61,10 +61,10 @@ public sealed class JwtTokenGenerator : IJwtTokenGenerator
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
-        // Add roles
+        // Add roles (normalize to uppercase to match authorization attributes)
         foreach (var role in roles)
         {
-            claims.Add(new Claim(ClaimTypes.Role, role));
+            claims.Add(new Claim(ClaimTypes.Role, role.ToUpperInvariant()));
         }
 
         var jwt = new JwtSecurityToken(

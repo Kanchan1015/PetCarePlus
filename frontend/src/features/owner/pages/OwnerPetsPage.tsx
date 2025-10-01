@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { PetCard } from "../../shared/components";
 import { petsApi } from "../../shared/api/petsApi";
 import type { Pet } from "../../shared/types/pet";
@@ -8,12 +9,14 @@ interface PetDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   pet: Pet;
+  onViewMedicalRecords: (pet: Pet) => void;
 }
 
 const PetDetailsModal: React.FC<PetDetailsModalProps> = ({
   isOpen,
   onClose,
   pet,
+  onViewMedicalRecords,
 }) => {
   if (!isOpen) return null;
 
@@ -132,10 +135,16 @@ const PetDetailsModal: React.FC<PetDetailsModalProps> = ({
             </div>
           </div>
 
-          <div className="mt-6 flex justify-end">
+          <div className="mt-6 flex justify-end space-x-3">
+            <button
+              onClick={() => onViewMedicalRecords(pet)}
+              className="inline-flex items-center rounded-2xl bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus-visible:ring focus-visible:ring-blue-500"
+            >
+              View Medical Records
+            </button>
             <button
               onClick={onClose}
-              className="inline-flex items-center rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-white focus-visible:ring focus-visible:ring-indigo-500"
+              className="inline-flex items-center rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 focus-visible:ring focus-visible:ring-indigo-500"
             >
               Close
             </button>
@@ -147,6 +156,7 @@ const PetDetailsModal: React.FC<PetDetailsModalProps> = ({
 };
 
 export const OwnerPetsPage: React.FC = () => {
+  const navigate = useNavigate();
   const [pets, setPets] = useState<Pet[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -189,6 +199,10 @@ export const OwnerPetsPage: React.FC = () => {
   const handleViewDetails = (pet: Pet) => {
     setSelectedPet(pet);
     setIsDetailsModalOpen(true);
+  };
+
+  const handleViewMedicalRecords = (pet: Pet) => {
+    navigate(`/owner/pets/${pet.id}/medical-records`);
   };
 
   const filteredPets = pets.filter(
@@ -257,6 +271,7 @@ export const OwnerPetsPage: React.FC = () => {
                 pet={pet}
                 showOwner={false}
                 onView={() => handleViewDetails(pet)}
+                onViewMedicalRecords={() => handleViewMedicalRecords(pet)}
               />
             ))}
           </div>
@@ -276,6 +291,7 @@ export const OwnerPetsPage: React.FC = () => {
                 pet={pet}
                 showOwner={false}
                 onView={() => handleViewDetails(pet)}
+                onViewMedicalRecords={() => handleViewMedicalRecords(pet)}
               />
             ))}
           </div>
@@ -313,6 +329,7 @@ export const OwnerPetsPage: React.FC = () => {
             setSelectedPet(null);
           }}
           pet={selectedPet}
+          onViewMedicalRecords={handleViewMedicalRecords}
         />
       )}
     </div>

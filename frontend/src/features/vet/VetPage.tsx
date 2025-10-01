@@ -1,42 +1,47 @@
+import { Link } from "react-router-dom";
+
 const VetPage = () => {
   return (
-    <main className="mx-auto max-w-5xl px-4 py-10 space-y-8">
+    <div className="space-y-6">
       {/* Header */}
-      <header>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-800">
+      <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500">
+        <h1 className="text-3xl font-bold text-blue-800 mb-2">
           Vet Dashboard
         </h1>
-        <p className="mt-1 text-slate-600">
-          Access your appointments, patients, and treatments
+        <p className="text-gray-600">
+          Access your appointments, patients, and treatments 🩺🐾
         </p>
-      </header>
+      </div>
 
       {/* Navigation cards */}
-      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <li className="rounded-2xl bg-white p-5 ring-1 ring-slate-200 shadow-sm hover:shadow-md hover:bg-slate-50 transition">
-          <h2 className="font-semibold text-slate-800">
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="bg-white rounded-xl shadow-md p-6 border-t-4 border-orange-500 hover:shadow-lg transition-shadow">
+          <h2 className="text-lg font-semibold text-gray-800 mb-2">
             Today&apos;s Appointments
           </h2>
-          <p className="mt-1 text-sm text-slate-600">
+          <p className="text-sm text-gray-600">
             Review and manage your daily schedule
           </p>
-        </li>
-        <li className="rounded-2xl bg-white p-5 ring-1 ring-slate-200 shadow-sm hover:shadow-md hover:bg-slate-50 transition">
-          <h2 className="font-semibold text-slate-800">Search Pets</h2>
-          <p className="mt-1 text-sm text-slate-600">
+        </div>
+        <div className="bg-white rounded-xl shadow-md p-6 border-t-4 border-green-500 hover:shadow-lg transition-shadow">
+          <h2 className="text-lg font-semibold text-gray-800 mb-2">Search Pets</h2>
+          <p className="text-sm text-gray-600">
             Find patient records quickly
           </p>
-        </li>
-        <li className="rounded-2xl bg-white p-5 ring-1 ring-slate-200 shadow-sm hover:shadow-md hover:bg-slate-50 transition">
-          <h2 className="font-semibold text-slate-800">
-            Add Treatment / Vaccination
+        </div>
+        <Link
+          to="/vet/medical-records"
+          className="block bg-white rounded-xl shadow-md p-6 border-t-4 border-blue-500 hover:shadow-lg transition-shadow focus-visible:ring focus-visible:ring-blue-500"
+        >
+          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+            Medical Records Management
           </h2>
-          <p className="mt-1 text-sm text-slate-600">
-            Update pet health records with new care
+          <p className="text-sm text-gray-600">
+            Add treatments, vaccinations, and manage pet health records
           </p>
-        </li>
-      </ul>
-    </main>
+        </Link>
+      </div>
+    </div>
   );
 };
 

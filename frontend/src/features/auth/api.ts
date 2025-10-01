@@ -7,7 +7,7 @@ export type RegisterOwnerBody = {
 };
 
 export async function registerOwner(body: RegisterOwnerBody) {
-  const res = await fetch(`${BASE}/api/auth/register-owner`, {
+  const res = await fetch(`${BASE}/auth/register-owner`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),

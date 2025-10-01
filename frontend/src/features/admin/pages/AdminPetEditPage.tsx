@@ -13,29 +13,29 @@ export const AdminPetEditPage: React.FC = () => {
   const [loadingPet, setLoadingPet] = useState(true);
 
   useEffect(() => {
+    const loadPet = async (petId: string) => {
+      try {
+        setLoadingPet(true);
+        const petData = await adminPetsApi.getById(petId);
+        if (petData) {
+          setPet(petData);
+        } else {
+          alert('Pet not found');
+          navigate('/admin/pets');
+        }
+      } catch (error) {
+        console.error('Failed to load pet:', error);
+        alert('Failed to load pet. Please try again.');
+        navigate('/admin/pets');
+      } finally {
+        setLoadingPet(false);
+      }
+    };
+
     if (id) {
       loadPet(id);
     }
-  }, [id]);
-
-  const loadPet = async (petId: string) => {
-    try {
-      setLoadingPet(true);
-      const petData = await adminPetsApi.getById(petId);
-      if (petData) {
-        setPet(petData);
-      } else {
-        alert('Pet not found');
-        navigate('/admin/pets');
-      }
-    } catch (error) {
-      console.error('Failed to load pet:', error);
-      alert('Failed to load pet. Please try again.');
-      navigate('/admin/pets');
-    } finally {
-      setLoadingPet(false);
-    }
-  };
+  }, [id, navigate]);
 
   const handleSubmit = async (data: CreatePetRequest | UpdatePetRequest) => {
     if (!id || !pet) return;

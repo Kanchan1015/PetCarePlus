@@ -12,7 +12,7 @@ namespace PetCare.Api.Controllers;
 
 [ApiController]
 [Route("api/admin/users")]
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "ADMIN")]
 public class AdminUsersController : ControllerBase
 {
     // ---------- CREATE VET ----------

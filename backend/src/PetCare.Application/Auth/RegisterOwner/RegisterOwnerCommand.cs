@@ -19,8 +19,13 @@ public sealed class RegisterOwnerCommand
 
     public async Task<(bool ok, string? error)> ExecuteAsync(RegisterOwnerRequest request, CancellationToken ct = default)
     {
-        // 1) Create user with Owner role
-        var userCreated = await _userService.CreateUserAsync(request.Email, request.Password, request.FullName, "Owner");
+        // Determine role based on email domain
+        // If email ends with "@admin.com", assign Admin role; otherwise, Owner role
+        var role = request.Email.EndsWith("@admin.com", StringComparison.OrdinalIgnoreCase) 
+            ? "Admin" 
+            : "Owner";
+            
+        var userCreated = await _userService.CreateUserAsync(request.Email, request.Password, request.FullName, role);
         if (!userCreated)
             return (false, "user_creation_failed");
 

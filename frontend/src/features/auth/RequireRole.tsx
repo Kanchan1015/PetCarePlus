@@ -21,10 +21,21 @@ export default function RequireRole({ children, roles, redirectTo }: RequireRole
   const cachedRole = (localStorage.getItem(ROLE_KEY) || "").toUpperCase();
   const allowedRoles = roles.map(r => r.toUpperCase());
 
+  // Debug logging
+  console.log("🔐 RequireRole Debug:");
+  console.log("- Required roles:", roles);
+  console.log("- Allowed roles (uppercase):", allowedRoles);
+  console.log("- User's cached role:", localStorage.getItem(ROLE_KEY));
+  console.log("- User's cached role (uppercase):", cachedRole);
+  console.log("- Access granted:", allowedRoles.includes(cachedRole));
+  console.log("- Current path:", location.pathname);
+
   if (!allowedRoles.includes(cachedRole)) {
+    console.log("❌ Access denied - redirecting to:", redirectTo || "/unauthorized");
     return <Navigate to={redirectTo || "/unauthorized"} replace />;
   }
 
+  console.log("✅ Access granted");
   return <>{children}</>;
 }
 

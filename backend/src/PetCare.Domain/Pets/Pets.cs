@@ -25,11 +25,11 @@ public class Pet
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
 
-    // // Navigation properties for medical records
-    // public ICollection<MedicalRecords.MedicalRecord> MedicalRecords { get; set; } = new List<MedicalRecords.MedicalRecord>();
-    // public ICollection<MedicalRecords.Vaccination> Vaccinations { get; set; } = new List<MedicalRecords.Vaccination>();
-    // public ICollection<MedicalRecords.Treatment> Treatments { get; set; } = new List<MedicalRecords.Treatment>();
-    // public ICollection<MedicalRecords.Prescription> Prescriptions { get; set; } = new List<MedicalRecords.Prescription>();
+    // Navigation properties for medical records
+    public ICollection<MedicalRecords.MedicalRecord> MedicalRecords { get; set; } = new List<MedicalRecords.MedicalRecord>();
+    public ICollection<MedicalRecords.Vaccination> Vaccinations { get; set; } = new List<MedicalRecords.Vaccination>();
+    public ICollection<MedicalRecords.Treatment> Treatments { get; set; } = new List<MedicalRecords.Treatment>();
+    public ICollection<MedicalRecords.Prescription> Prescriptions { get; set; } = new List<MedicalRecords.Prescription>();
 
     // Computed properties
     public int? AgeInYears => DateOfBirth.HasValue 

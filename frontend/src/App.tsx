@@ -19,7 +19,11 @@ import OwnerProfilePage from "./features/owner/OwnerProfilePage";
 import { AdminPetsPage, AdminPetAddPage, AdminPetEditPage } from "./features/admin/pages";
 import { OwnerPetsPage } from "./features/owner/pages";
 import LandingPage from "./pages/LandingPage.tsx";
-import AdminShell from "./features/admin/layout/AdminShell"; //
+import AdminShell from "./features/admin/layout/AdminShell";
+import VetShell from "./features/vet/layout/VetShell";
+import OwnerShell from "./features/owner/layout/OwnerShell";
+import PetMedicalRecordsWrapper from "./features/owner/PetMedicalRecordsWrapper";
+import VetMedicalRecords from "./features/vet/VetMedicalRecords";
 
 const App = () => {
   return (
@@ -30,38 +34,43 @@ const App = () => {
         <Route path="/register" element={<RegistrationPage />} />
         <Route path="/" element={<LandingPage />} />
 
-        {/* Owner/Vet */}
+        {/* Owner Routes (parent shell + nested children) */}
         <Route
           path="/owner"
           element={
             <RequireAuth>
               <RequireRole roles={["OWNER", "ADMIN", "VET"]}>
-                <OwnerPage />
+                <OwnerShell />
               </RequireRole>
             </RequireAuth>
           }
-        />
+        >
+          {/* index = /owner */}
+          <Route index element={<OwnerPage />} />
+          
+          {/* Owner nested routes */}
+          <Route path="pets" element={<OwnerPetsPage />} />
+          <Route path="pets/:petId/medical-records" element={<PetMedicalRecordsWrapper />} />
+          <Route path="profile" element={<OwnerProfilePage />} />
+        </Route>
+
+        {/* Vet Routes (parent shell + nested children) */}
         <Route
           path="/vet"
           element={
             <RequireAuth>
               <RequireRole roles={["VET", "ADMIN"]}>
-                <VetPage />
+                <VetShell />
               </RequireRole>
             </RequireAuth>
           }
-        />
-        <Route
-          path="/owner/pets"
-          element={
-            <RequireAuth>
-              <RequireRole roles={["OWNER", "ADMIN"]}>
-                <OwnerPetsPage />
-              </RequireRole>
-            </RequireAuth>
-          }
-        />
-        <Route path="/owner/profile" element={<OwnerProfilePage />} />
+        >
+          {/* index = /vet */}
+          <Route index element={<VetPage />} />
+          
+          {/* Vet nested routes */}
+          <Route path="medical-records" element={<VetMedicalRecords />} />
+        </Route>
 
         {/* Admin (parent shell + nested children) */}
         <Route

@@ -1,6 +1,6 @@
 // src/features/admin/AdminDashboard.tsx
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { fetchVets, type VetItem } from "./vetsApi";
 import { fetchAdminUsers, type UserListItem } from "./usersApi";
 import { FaArrowRight } from "react-icons/fa";

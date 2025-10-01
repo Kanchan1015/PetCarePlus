@@ -1,0 +1,127 @@
+name: PR to Production Validation
+
+on:
+  pull_request:
+    branches: [dev, main, prod]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'Dockerfile'
+      - '.github/workflows/**'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  backend-comprehensive-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build Release
+      run: dotnet build --no-restore --configuration Release
+
+    - name: Run API Unit Tests
+      env:
+        DOTNET_CLI_TELEMETRY_OPTOUT: 1
+        ASPNETCORE_ENVIRONMENT: Testing
+      run: dotnet test ./tests/PetCare.Api.Tests/PetCare.Api.Tests.csproj --no-build --configuration Release --verbosity normal
+
+    - name: Run Application Tests
+      env:
+        DOTNET_CLI_TELEMETRY_OPTOUT: 1
+        ASPNETCORE_ENVIRONMENT: Testing
+      run: dotnet test ./tests/PetCare.Application.Tests/PetCare.Application.Tests.csproj --no-build --configuration Release --verbosity normal
+
+    - name: Run Domain Tests
+      env:
+        DOTNET_CLI_TELEMETRY_OPTOUT: 1
+        ASPNETCORE_ENVIRONMENT: Testing
+      run: dotnet test ./tests/PetCare.Domain.Tests/PetCare.Domain.Tests.csproj --no-build --configuration Release --verbosity normal
+
+    - name: Run Integration Tests
+      env:
+        DOTNET_CLI_TELEMETRY_OPTOUT: 1
+        ASPNETCORE_ENVIRONMENT: Testing
+      run: dotnet test ./tests/PetCare.Integration.Tests/PetCare.Integration.Tests.csproj --no-build --configuration Release --verbosity normal
+
+  frontend-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build frontend
+      env:
+        VITE_API_BASE_URL: /api
+        VITE_FEATURE_AUTH_ROUTING: true
+      run: npm run build
+
+    - name: Run frontend linting
+      continue-on-error: true
+      run: npm run lint
+
+  docker-build-test:
+    runs-on: ubuntu-latest
+    needs: [backend-comprehensive-tests, frontend-tests]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Test Docker build
+      run: |
+        docker build -t petcareplus-test .
+        echo "✅ Docker build successful"
+
+    - name: Comment PR Success
+      uses: actions/github-script@v7
+      if: success()
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: '🎉 All tests passed! Backend, frontend, and Docker build are ready for production deployment.'
+          })
+
+    - name: Comment PR Failure
+      uses: actions/github-script@v7
+      if: failure()
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: '❌ Some tests failed. Please check the workflow logs and fix the issues before merging.'
+          })

@@ -63,7 +63,7 @@ public class PetsControllerTests
         var claims = new List<Claim>
         {
             new("sub", userId),
-            new(ClaimTypes.Role, role)
+            new(ClaimTypes.Role, role.ToUpperInvariant()) // Normalize role to uppercase to match JWT behavior
         };
 
         var identity = new ClaimsIdentity(claims, "TestAuth");
