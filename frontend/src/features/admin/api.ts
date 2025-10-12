@@ -1,6 +1,6 @@
 import { getToken } from "../auth/token";
 
-const BASE = (import.meta as any).env?.VITE_API_BASE_URL as string | undefined;
+const BASE = (import.meta.env?.VITE_API_BASE_URL as string) || undefined;
 
 export type CreateVetBody = {
   fullName: string;
@@ -41,7 +41,7 @@ export async function createVet(
   const timer = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
-    const res = await fetch(`${BASE}/api/admin/users/vets`, {
+    const res = await fetch(`${BASE}/admin/users/vets`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -64,11 +64,15 @@ export async function createVet(
 
     if (res.status === 400) {
       // try to read problem details
-      let pd: any = null;
+      let pd: { detail?: string } | null = null;
       try {
         pd = await res.json();
-      } catch {}
-      const detail = pd?.detail || "Validation failed";
+      } catch {
+        // JSON parsing failed, ignore
+      }
+      const detail = (pd && typeof pd === 'object' && 'detail' in pd) 
+        ? pd.detail || "Validation failed" 
+        : "Validation failed";
       return { ok: false, code: "validation_failed", detail };
     }
 
@@ -76,10 +80,13 @@ export async function createVet(
     let text = "";
     try {
       text = await res.text();
-    } catch {}
+    } catch {
+      // Text parsing failed, ignore
+    }
     return { ok: false, code: "failed", detail: text || `HTTP ${res.status}` };
-  } catch (e: any) {
-    if (e?.name === "AbortError") return { ok: false, code: "timeout" };
+  } catch (e: unknown) {
+    if (e && typeof e === 'object' && 'name' in e && e.name === "AbortError") 
+      return { ok: false, code: "timeout" };
     return { ok: false, code: "network", detail: String(e) };
   } finally {
     clearTimeout(timer);

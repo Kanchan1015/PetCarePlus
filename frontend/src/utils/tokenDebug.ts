@@ -51,4 +51,9 @@ export function debugToken() {
 }
 
 // Make it available globally for browser console debugging
-(window as any).debugToken = debugToken;
+declare global {
+  interface Window {
+    debugToken: typeof debugToken;
+  }
+}
+window.debugToken = debugToken;

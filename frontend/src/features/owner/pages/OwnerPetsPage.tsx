@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { PetCard } from "../../shared/components";
 import { petsApi } from "../../shared/api/petsApi";
 import type { Pet } from "../../shared/types/pet";
@@ -8,22 +9,24 @@ interface PetDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   pet: Pet;
+  onViewMedicalRecords: (pet: Pet) => void;
 }
 
 const PetDetailsModal: React.FC<PetDetailsModalProps> = ({
   isOpen,
   onClose,
   pet,
+  onViewMedicalRecords,
 }) => {
   if (!isOpen) return null;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fadeIn"
       role="dialog"
       aria-modal="true"
     >
-      <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-white ring-1 ring-slate-200 shadow-xl">
+      <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-white ring-1 ring-slate-200 shadow-xl transition-all">
         <div className="p-6">
           <div className="mb-4 flex items-start justify-between">
             <h2 className="text-2xl font-bold tracking-tight text-slate-800">
@@ -31,7 +34,7 @@ const PetDetailsModal: React.FC<PetDetailsModalProps> = ({
             </h2>
             <button
               onClick={onClose}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-700 focus-visible:ring focus-visible:ring-indigo-500"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-700 focus-visible:ring focus-visible:ring-indigo-500 transition-colors"
               aria-label="Close modal"
             >
               ×
@@ -132,10 +135,16 @@ const PetDetailsModal: React.FC<PetDetailsModalProps> = ({
             </div>
           </div>
 
-          <div className="mt-6 flex justify-end">
+          <div className="mt-6 flex justify-end space-x-3">
+            <button
+              onClick={() => onViewMedicalRecords(pet)}
+              className="inline-flex items-center rounded-2xl bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus-visible:ring focus-visible:ring-blue-500 transition-colors"
+            >
+              View Medical Records
+            </button>
             <button
               onClick={onClose}
-              className="inline-flex items-center rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-white focus-visible:ring focus-visible:ring-indigo-500"
+              className="inline-flex items-center rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 focus-visible:ring focus-visible:ring-indigo-500 transition-colors"
             >
               Close
             </button>
@@ -147,6 +156,7 @@ const PetDetailsModal: React.FC<PetDetailsModalProps> = ({
 };
 
 export const OwnerPetsPage: React.FC = () => {
+  const navigate = useNavigate();
   const [pets, setPets] = useState<Pet[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -165,11 +175,10 @@ export const OwnerPetsPage: React.FC = () => {
       setError(null);
 
       const token = localStorage.getItem("APP_AT");
-      console.log("Token check - Token exists:", !!token);
+      console.log("Token exists:", !!token);
       if (token) console.log("Token preview:", token.substring(0, 50) + "...");
 
       try {
-        console.log("Testing backend claims...");
         const debugInfo = await petsApi.debugMe();
         console.log("Backend debug info:", debugInfo);
       } catch (debugError) {
@@ -191,6 +200,10 @@ export const OwnerPetsPage: React.FC = () => {
     setIsDetailsModalOpen(true);
   };
 
+  const handleViewMedicalRecords = (pet: Pet) => {
+    navigate(`/owner/pets/${pet.id}/medical-records`);
+  };
+
   const filteredPets = pets.filter(
     (pet) =>
       pet.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -203,7 +216,9 @@ export const OwnerPetsPage: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <div className="text-lg text-slate-600">Loading your pets...</div>
+        <div className="text-lg text-slate-600 animate-pulse">
+          Loading your pets...
+        </div>
       </div>
     );
   }
@@ -224,16 +239,16 @@ export const OwnerPetsPage: React.FC = () => {
       <div className="max-w-md">
         <input
           type="text"
-          placeholder="Search your pets by name or breed..."
+          placeholder="Search pets by name or breed..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full rounded-xl border-0 px-3 py-2 ring-1 ring-slate-200 text-slate-800 placeholder:text-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+          className="w-full rounded-2xl border-0 px-3 py-2 ring-1 ring-slate-200 text-slate-800 placeholder:text-slate-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 transition-all"
         />
       </div>
 
-      {/* Error State */}
+      {/* Error */}
       {error && (
-        <div className="rounded-2xl bg-red-50 p-4 text-red-800 ring-1 ring-red-200">
+        <div className="rounded-2xl bg-red-50 p-4 text-red-800 ring-1 ring-red-200 animate-fadeIn">
           <p>{error}</p>
           <button
             onClick={loadMyPets}
@@ -257,6 +272,7 @@ export const OwnerPetsPage: React.FC = () => {
                 pet={pet}
                 showOwner={false}
                 onView={() => handleViewDetails(pet)}
+                onViewMedicalRecords={() => handleViewMedicalRecords(pet)}
               />
             ))}
           </div>
@@ -276,6 +292,7 @@ export const OwnerPetsPage: React.FC = () => {
                 pet={pet}
                 showOwner={false}
                 onView={() => handleViewDetails(pet)}
+                onViewMedicalRecords={() => handleViewMedicalRecords(pet)}
               />
             ))}
           </div>
@@ -284,20 +301,20 @@ export const OwnerPetsPage: React.FC = () => {
 
       {/* Empty State */}
       {pets.length === 0 && !isLoading && (
-        <div className="rounded-2xl bg-white p-8 text-center ring-1 ring-slate-200">
-          <div className="mb-3 text-6xl text-slate-400">🐾</div>
+        <div className="rounded-2xl bg-white p-8 text-center ring-1 ring-slate-200 shadow-md">
+          <div className="mb-3 text-6xl text-slate-400 animate-pulse">🐾</div>
           <p className="text-lg text-slate-600">
             You don&apos;t have any pets yet.
           </p>
-          <p className="text-slate-500">
-            Contact your veterinarian to add your pets to the system.
+          <p className="text-slate-500 mt-2">
+            Contact your veterinarian to add your pets.
           </p>
         </div>
       )}
 
       {/* No Search Results */}
       {filteredPets.length === 0 && pets.length > 0 && searchTerm && (
-        <div className="rounded-2xl bg-white p-8 text-center ring-1 ring-slate-200">
+        <div className="rounded-2xl bg-white p-8 text-center ring-1 ring-slate-200 shadow-md">
           <p className="text-lg text-slate-600">
             No pets found matching &quot;{searchTerm}&quot;.
           </p>
@@ -313,6 +330,7 @@ export const OwnerPetsPage: React.FC = () => {
             setSelectedPet(null);
           }}
           pet={selectedPet}
+          onViewMedicalRecords={handleViewMedicalRecords}
         />
       )}
     </div>

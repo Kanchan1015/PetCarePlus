@@ -1,6 +1,6 @@
 import { getToken } from "../auth/token";
 
-const BASE = (import.meta as any).env?.VITE_API_BASE_URL as string | undefined;
+const BASE = (import.meta.env?.VITE_API_BASE_URL as string) || undefined;
 
 export type VetItem = {
   id: string;
@@ -36,7 +36,7 @@ export async function fetchVets(
   if (params.page) q.set("page", String(params.page));
   if (params.pageSize) q.set("pageSize", String(params.pageSize));
 
-  const url = `${BASE}/api/admin/users/vets${q.toString() ? `?${q}` : ""}`;
+  const url = `${BASE}/admin/users/vets${q.toString() ? `?${q}` : ""}`;
 
   const timeoutMs = opts?.timeoutMs ?? 10_000;
   const controller = new AbortController();
@@ -59,10 +59,13 @@ export async function fetchVets(
     let text = "";
     try {
       text = await res.text();
-    } catch {}
+    } catch {
+      // JSON parsing failed, ignore
+    }
     return { ok: false, code: "failed", detail: text || `HTTP ${res.status}` };
-  } catch (e: any) {
-    if (e?.name === "AbortError") return { ok: false, code: "timeout" };
+  } catch (e: unknown) {
+    if (e && typeof e === 'object' && 'name' in e && e.name === "AbortError") 
+      return { ok: false, code: "timeout" };
     return { ok: false, code: "network", detail: String(e) };
   } finally {
     clearTimeout(timer);

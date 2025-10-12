@@ -76,7 +76,7 @@ export async function fetchAdminUsers(params: {
   if (params.role && params.role !== "All") q.set("role", params.role);
 
   try {
-    const res = await fetch(`${BASE}/api/admin/users?${q.toString()}`, {
+    const res = await fetch(`${BASE}/admin/users?${q.toString()}`, {
       headers: { Authorization: `Bearer ${token}` },
       signal: params.signal,
     });
@@ -114,7 +114,7 @@ export async function updateUser(
   if (!token) return { ok: false, code: "unauthorized" };
 
   try {
-    const res = await fetch(`${BASE}/api/admin/users/${id}`, {
+    const res = await fetch(`${BASE}/admin/users/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -160,7 +160,7 @@ export async function getMe(): Promise<MeInfo> {
   const token = localStorage.getItem(TOKEN_KEY);
   if (!token) throw new Error("No token");
 
-  const res = await fetch(`${BASE}/api/auth/me`, {
+  const res = await fetch(`${BASE}/auth/me`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 
@@ -189,7 +189,7 @@ export async function updateMe(body: { fullName?: string; email?: string }): Pro
   if (!token) return { ok: false, code: "unauthorized" };
 
   try {
-    const res = await fetch(`${BASE}/api/users/me`, {
+    const res = await fetch(`${BASE}/users/me`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

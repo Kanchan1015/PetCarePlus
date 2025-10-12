@@ -4,7 +4,7 @@ import { Navigate, useLocation } from "react-router-dom";
 
 const TOKEN_KEY = "APP_AT";
 const ROLE_KEY = "APP_ROLE";
-const BASE = (import.meta as any).env?.VITE_API_BASE_URL as string | undefined;
+const BASE = (import.meta.env?.VITE_API_BASE_URL as string) || undefined;
 
 export default function RequireAdmin({ children }: { children: ReactNode }) {
   const location = useLocation();
@@ -35,8 +35,8 @@ function AdminVerifier({ children }: { children: ReactNode }) {
         const token = localStorage.getItem(TOKEN_KEY);
         if (!token || !BASE) return setAllowed(false);
 
-        // try /api/users/me first; if 404, fallback to /api/auth/me
-        const urls = [`${BASE}/api/users/me`, `${BASE}/api/auth/me`];
+        // try /users/me first; if 404, fallback to /auth/me
+        const urls = [`${BASE}/users/me`, `${BASE}/auth/me`];
         let roles: string[] | null = null;
 
         for (const url of urls) {
@@ -48,7 +48,9 @@ function AdminVerifier({ children }: { children: ReactNode }) {
             const data = await res.json();
             // support both shapes: { roles: [...] } or { user: { role } } if you ever change it
             if (Array.isArray(data?.roles))
-              roles = data.roles.map((r: any) => String(r).toUpperCase());
+              roles = data.roles.map((r: string | { name?: string }) => 
+                typeof r === 'string' ? r.toUpperCase() : String(r.name || r).toUpperCase()
+              );
             else if (data?.user?.role)
               roles = [String(data.user.role).toUpperCase()];
             break;

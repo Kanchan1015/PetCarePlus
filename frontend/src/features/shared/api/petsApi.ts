@@ -2,12 +2,27 @@ import type { Pet, PetSummary, CreatePetRequest, UpdatePetRequest, AssignPetRequ
 import { getToken } from '../../auth/token';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL as string;
-const API_BASE = `${API_BASE_URL}/api/pets`;
+const API_BASE = `${API_BASE_URL}/pets`;
 
 // Get auth token from localStorage
 const getAuthHeaders = () => {
   const token = getToken();
   console.log('Auth token:', token ? 'Present' : 'Missing'); // Debug log
+  console.log('Token value:', token); // Debug: show actual token
+  console.log('Full Authorization header:', token ? `Bearer ${token}` : 'No token'); // Debug log
+  
+  // Debug: decode token to see claims
+  if (token) {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      console.log('Token payload:', payload);
+      console.log('Token role:', payload.role || payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']);
+      console.log('Token expiration:', new Date(payload.exp * 1000));
+    } catch (e) {
+      console.error('Failed to decode token:', e);
+    }
+  }
+  
   return {
     'Content-Type': 'application/json',
     ...(token && { 'Authorization': `Bearer ${token}` })
@@ -123,11 +138,11 @@ export const petsApi = {
   },
 
   // Debug endpoint to check user claims
-  debugMe: async (): Promise<any> => {
+  debugMe: async (): Promise<unknown> => {
     const response = await fetch(`${API_BASE}/debug/me`, {
       headers: getAuthHeaders()
     });
-    return handleResponse<any>(response);
+    return handleResponse<unknown>(response);
   },
 
   // Get pets by owner ID

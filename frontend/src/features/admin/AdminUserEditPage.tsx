@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchAdminUsers, updateUser } from "./usersApi";
-import type { UserListItem } from "./usersApi";
+import type { UserListItem, UpdateUserBody } from "./usersApi";
 import { useParams, useNavigate } from "react-router-dom";
 
 function AdminUserEditPage() {
@@ -64,7 +64,7 @@ function AdminUserEditPage() {
     setSaveMsg(null);
     setError(null);
 
-    const body: any = {};
+    const body: UpdateUserBody = {};
     if (fullName.trim() && fullName !== (user?.fullName ?? ""))
       body.fullName = fullName.trim();
     if (email.trim() && email !== (user?.email ?? ""))

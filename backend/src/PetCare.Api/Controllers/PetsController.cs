@@ -30,10 +30,10 @@ public class PetsController : ControllerBase
     }
 
     /// <summary>
-    /// Get all pets (Admin only)
+    /// Get all pets (Admin and Vet only)
     /// </summary>
     [HttpGet]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "VET,ADMIN")]
     public async Task<ActionResult<IReadOnlyList<PetSummaryDto>>> GetAllPets()
     {
         var query = new GetPetsQuery();
@@ -55,25 +55,25 @@ public class PetsController : ControllerBase
             return NotFound($"Pet with ID {id} not found");
         }
 
-        // Users can only access their own pets, Admins can access any pet
-        if (!User.IsInRole("Admin") && result.OwnerUserId != (User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value))
+        // VETs and Admins can access any pet, Owners can only access their own pets
+        if (!User.IsInRole("VET") && !User.IsInRole("ADMIN") && result.OwnerUserId != (User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value))
         {
-            return Forbid("You can only access your own pets");
+            return Forbid();
         }
 
         return Ok(result);
     }
 
     /// <summary>
-    /// Get pets by owner (Owners can get their own, Admins can get any)
+    /// Get pets by owner (Owners can get their own, VETs and Admins can get any)
     /// </summary>
     [HttpGet("owner/{ownerId}")]
     public async Task<ActionResult<IReadOnlyList<PetDto>>> GetPetsByOwner(string ownerId)
     {
-        // Users can only access their own pets, Admins can access any owner's pets
-        if (!User.IsInRole("Admin") && ownerId != (User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value))
+        // VETs and Admins can access any owner's pets, Owners can only access their own pets
+        if (!User.IsInRole("VET") && !User.IsInRole("ADMIN") && ownerId != (User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value))
         {
-            return Forbid("You can only access your own pets");
+            return Forbid();
         }
 
         var query = new GetPetsByOwnerQuery(ownerId);
@@ -85,7 +85,7 @@ public class PetsController : ControllerBase
     /// Get users for pet assignment selection (Admin only)
     /// </summary>
     [HttpGet("users/selection")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "ADMIN")]
     public async Task<ActionResult<IReadOnlyList<UserSelectionDto>>> GetUsersForSelection()
     {
         try
@@ -120,7 +120,7 @@ public class PetsController : ControllerBase
     /// Create a new pet (Admin only)
     /// </summary>
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "ADMIN")]
     public async Task<ActionResult<PetDto>> CreatePet([FromBody] CreatePetDto createPetDto)
     {
         var command = new CreatePetCommand(
@@ -149,7 +149,7 @@ public class PetsController : ControllerBase
     /// Update an existing pet (Admin only)
     /// </summary>
     [HttpPut("{id:guid}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "ADMIN")]
     public async Task<ActionResult<PetDto>> UpdatePet(Guid id, [FromBody] UpdatePetDto updatePetDto)
     {
         var command = new UpdatePetCommand(
@@ -179,7 +179,7 @@ public class PetsController : ControllerBase
     /// Delete a pet (Admin only)
     /// </summary>
     [HttpDelete("{id:guid}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "ADMIN")]
     public async Task<ActionResult> DeletePet(Guid id)
     {
         var command = new DeletePetCommand(id);
@@ -199,7 +199,7 @@ public class PetsController : ControllerBase
     /// Assign pet to a new owner (Admin only)
     /// </summary>
     [HttpPost("{id:guid}/assign")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "ADMIN")]
     public async Task<ActionResult<PetDto>> AssignPetToOwner(Guid id, [FromBody] AssignPetDto assignPetDto)
     {
         if (id != assignPetDto.PetId)

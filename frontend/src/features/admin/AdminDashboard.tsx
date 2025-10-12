@@ -1,6 +1,6 @@
 // src/features/admin/AdminDashboard.tsx
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { fetchVets, type VetItem } from "./vetsApi";
 import { fetchAdminUsers, type UserListItem } from "./usersApi";
 import { FaArrowRight } from "react-icons/fa";
@@ -192,6 +192,39 @@ const AdminDashboard: React.FC = () => {
               </button>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Sprint Addition: Appointment Management Section for quick admin access */}
+      <div className="bg-white rounded-xl shadow-md p-6 mb-8 border-l-4 border-purple-500">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="font-semibold text-lg text-purple-700">
+            Appointment Management
+          </h3>
+          <Link
+            to="/admin/appointments"
+            className="px-4 py-2 bg-purple-500 hover:opacity-90 text-white rounded-md text-sm"
+          >
+            View All Requests
+          </Link>
+        </div>
+        {/* Sprint Feature: Appointment statistics cards for quick overview */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <div className="text-2xl font-bold text-yellow-800">{stats.pendingAppointments}</div>
+            <div className="text-sm text-yellow-600">Pending Requests</div>
+            <div className="text-xs text-yellow-500 mt-1">Requires your attention</div>
+          </div>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="text-2xl font-bold text-blue-800">{stats.todayAppointments}</div>
+            <div className="text-sm text-blue-600">Today's Appointments</div>
+            <div className="text-xs text-blue-500 mt-1">Scheduled for today</div>
+          </div>
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <div className="text-2xl font-bold text-green-800">12</div>
+            <div className="text-sm text-green-600">This Week</div>
+            <div className="text-xs text-green-500 mt-1">Total appointments</div>
+          </div>
         </div>
       </div>
     </>

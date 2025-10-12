@@ -1,0 +1,44 @@
+# .NET build artifacts
+**/bin/
+**/obj/
+**/out/
+
+# Frontend build artifacts
+**/node_modules/
+**/dist/
+
+# IDE and editor files
+.vs/
+.vscode/
+*.user
+*.suo
+*.sln.docstates
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile*
+docker-compose*
+
+# Test results
+TestResults/
+
+# Build logs
+*.log
+
+# Package files
+*.nupkg
+*.snupkg
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

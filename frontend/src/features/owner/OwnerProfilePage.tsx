@@ -21,7 +21,7 @@ function OwnerProfilePage() {
         if (!active) return;
         setFullName(me.fullName ?? "");
         setEmail(me.email ?? "");
-      } catch (e: any) {
+      } catch {
         setErr("Failed to load your profile.");
       } finally {
         if (active) setLoading(false);
@@ -38,7 +38,7 @@ function OwnerProfilePage() {
     setMsg(null);
     setErr(null);
 
-    const body: any = {};
+    const body: { fullName?: string; email?: string } = {};
     if (fullName.trim()) body.fullName = fullName.trim();
     if (email.trim()) body.email = email.trim().toLowerCase();
 

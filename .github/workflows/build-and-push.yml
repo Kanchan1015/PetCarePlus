@@ -1,0 +1,49 @@
+name: Build and Push Container to GHCR
+
+on:
+  push:
+    branches: [dev]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'Dockerfile'
+      - '.dockerignore'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/naveeth235/petcareplus:latest
+            ghcr.io/naveeth235/petcareplus:${{ github.sha }}
+
+      - name: Create deployment summary
+        run: |
+          echo "## 🚀 Container Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Image**: \`ghcr.io/naveeth235/petcareplus:latest\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **SHA Tag**: \`ghcr.io/naveeth235/petcareplus:${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Registry**: GitHub Container Registry (GHCR)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Azure App Service Configuration" >> $GITHUB_STEP_SUMMARY
+          echo "Use this image URL in your Azure App Service:" >> $GITHUB_STEP_SUMMARY
+          echo "\`ghcr.io/naveeth235/petcareplus:latest\`" >> $GITHUB_STEP_SUMMARY

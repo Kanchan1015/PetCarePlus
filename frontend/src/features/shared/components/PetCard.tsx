@@ -9,6 +9,7 @@ interface PetCardProps {
   onDelete?: () => void;
   onAssign?: () => void;
   onView?: () => void;
+  onViewMedicalRecords?: () => void;
 }
 
 export const PetCard: React.FC<PetCardProps> = ({
@@ -17,7 +18,8 @@ export const PetCard: React.FC<PetCardProps> = ({
   onEdit,
   onDelete,
   onAssign,
-  onView
+  onView,
+  onViewMedicalRecords
 }) => {
   // Type guard to check if pet is a full Pet object
   const isFullPet = (pet: Pet | PetSummary): pet is Pet => {
@@ -87,6 +89,15 @@ export const PetCard: React.FC<PetCardProps> = ({
             className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
           >
             View
+          </button>
+        )}
+        
+        {onViewMedicalRecords && (
+          <button
+            onClick={onViewMedicalRecords}
+            className="px-3 py-1 text-sm bg-green-100 text-green-700 rounded hover:bg-green-200 transition-colors"
+          >
+            Medical Records
           </button>
         )}
         
