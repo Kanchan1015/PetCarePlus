@@ -6,3 +6,4 @@ export { AdminPetsPage } from './AdminPetsPage';
 export { AdminPetAddPage } from './AdminPetAddPage';
 export { AdminPetEditPage } from './AdminPetEditPage';
 export { AdminAppointmentsPage } from './AdminAppointmentsPage';
+export { default as AdminInventoryPage } from './AdminInventoryPage';

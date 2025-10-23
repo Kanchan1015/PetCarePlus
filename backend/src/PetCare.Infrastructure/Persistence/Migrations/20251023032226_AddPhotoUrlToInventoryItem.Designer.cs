@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PetCare.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using PetCare.Infrastructure.Persistence;
 namespace PetCare.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(PetCareDbContext))]
-    partial class PetCareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251023032226_AddPhotoUrlToInventoryItem")]
+    partial class AddPhotoUrlToInventoryItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

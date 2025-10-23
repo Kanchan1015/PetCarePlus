@@ -22,7 +22,7 @@ import AdminVetDetailsPage from "./features/admin/AdminVetDetailsPage.tsx";
 import AdminUsersPage from "./features/admin/AdminUsersPage";
 import AdminUserEditPage from "./features/admin/AdminUserEditPage";
 import OwnerProfilePage from "./features/owner/OwnerProfilePage";
-import { AdminPetsPage, AdminPetAddPage, AdminPetEditPage, AdminAppointmentsPage } from "./features/admin/pages";
+import { AdminPetsPage, AdminPetAddPage, AdminPetEditPage, AdminAppointmentsPage, AdminInventoryPage } from "./features/admin/pages";
 import { OwnerPetsPage, OwnerAppointmentsPage, OwnerRequestAppointmentPage, OwnerMedicalRecordsPage } from "./features/owner/pages"; // Sprint: Added appointment pages
 import { VetAppointmentsPage, VetProfilePage, VetTreatmentsPage } from "./features/vet/pages";
 import LandingPage from "./pages/LandingPage.tsx";
@@ -114,7 +114,7 @@ const App = () => {
           <Route path="appointments" element={<AdminAppointmentsPage />} />
 
           {/* future: inventory */}
-          {/* <Route path="inventory" element={<AdminInventoryPage />} /> */}
+          <Route path="inventory" element={<AdminInventoryPage />} />
         </Route>
 
         {/* Misc */}

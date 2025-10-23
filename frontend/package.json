@@ -12,6 +12,7 @@
   "dependencies": {
     "@tanstack/react-query": "^5.85.9",
     "@tanstack/react-router": "^1.131.32",
+    "antd": "^5.27.6",
     "axios": "^1.11.0",
     "framer-motion": "^12.23.21",
     "html2canvas": "^1.4.1",

@@ -5,6 +5,7 @@ using PetCare.Domain.MedicalRecords;
 using PetCare.Domain.Appointments; // Sprint Addition: Appointment entities
 using PetCare.Domain.Notifications; // Sprint Addition: Notification entities
 using PetCare.Infrastructure.Auth;
+using PetCare.Domain.Inventory;
 
 namespace PetCare.Infrastructure.Persistence;
 
@@ -21,6 +22,8 @@ public class PetCareDbContext : IdentityDbContext<ApplicationUser>
     // Sprint Addition: Appointment and Notification DbSets
     public DbSet<Appointment> Appointments => Set<Appointment>();
     public DbSet<Notification> Notifications => Set<Notification>();
+
+    public DbSet<InventoryItem> InventoryItems { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -215,6 +218,23 @@ public class PetCareDbContext : IdentityDbContext<ApplicationUser>
             // Indexes for common queries
             b.HasIndex(n => new { n.UserId, n.IsRead }); // User's unread notifications
             b.HasIndex(n => n.CreatedAt); // Recent notifications
+        });
+
+        // InventoryItem configuration
+        builder.Entity<InventoryItem>(b =>
+        {
+            b.Property(i => i.Name).HasMaxLength(200).IsRequired();
+            b.Property(i => i.Category).HasMaxLength(100).IsRequired();
+            b.Property(i => i.Supplier).HasMaxLength(200).IsRequired();
+            b.Property(i => i.Quantity).IsRequired();
+            b.Property(i => i.ExpiryDate); // Already nullable, no .IsRequired()
+            b.Property(i => i.Description).HasMaxLength(1000);
+
+            // Indexes for common queries
+            b.HasIndex(i => i.Name);
+            b.HasIndex(i => i.Category);
+            b.HasIndex(i => i.Supplier);
+            b.HasIndex(i => i.Quantity); // For low stock queries
         });
     }
 }

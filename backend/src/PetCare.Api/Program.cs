@@ -13,6 +13,8 @@ using PetCare.Infrastructure.Persistence;   // PetCareDbContext
 using PetCare.Infrastructure.Persistence.Repositories;  // PetRepository
 using PetCare.Application.Common.Interfaces; // IPetRepository
 using PetCare.Infrastructure.Services; // UserService, NotificationService
+using PetCare.Application.Inventory;
+
 
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -107,11 +109,13 @@ builder.Services.AddScoped<IPrescriptionRepository, PrescriptionRepository>();
 // Sprint: Appointment system repositories
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
 
 // ---------- Services ----------
 builder.Services.AddScoped<IUserService, PetCare.Infrastructure.Services.UserService>();
 // Sprint: Appointment system services
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IInventoryService, InventoryService>();
 
 // ---------- MediatR ----------
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(PetCare.Application.Pets.Commands.CreatePet.CreatePetCommand).Assembly));
@@ -201,6 +205,9 @@ if (app.Environment.IsProduction())
 {
     app.UseStaticFiles();
 }
+
+// Serve static files (for uploaded images)
+app.UseStaticFiles();
 
 app.UseCors("ui");
 
