@@ -11,13 +11,6 @@ using FluentAssertions;
 
 namespace PetCare.Integration.Tests.Inventory
 {
-    // IMPORTANT:
-    // - Ensure the Program class referenced below is the entry point of your API project.
-    //   If your Program class namespace isn't PetCare.Api (or file name differs), update the generic parameter.
-    //
-    // - By default this uses the application startup as-is. If you want DB isolation for tests,
-    //   see the "OPTIONAL: Swap DbContext to SQLite in-memory" block below and uncomment/adjust it.
-    //
     public class InventoryControllerIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly WebApplicationFactory<Program> _factory;
@@ -76,54 +69,5 @@ namespace PetCare.Integration.Tests.Inventory
             // Response should be a JSON array (could be empty). Just assert it's valid JSON & returns 200
             json.Should().StartWith("[");
         }
-
-        /*
-        OPTIONAL: Swap DbContext to SQLite in-memory for isolation (recommended in CI)
-
-        If you want the integration tests to run against an isolated in-memory SQLite DB (so tests
-        don't touch your developer DB), use WithWebHostBuilder to replace the real DbContext
-        registration. Below is a sketch of how to do it; uncomment and adapt to your project.
-
-        Note: Replace 'YourDbContext' with the actual DbContext class (e.g., AppDbContext or
-        PetCareDbContext). Also ensure you have Microsoft.Data.Sqlite and Microsoft.EntityFrameworkCore.Sqlite
-        packages referenced in the test project.
-
-        Example:
-        public InventoryControllerIntegrationTests()
-        {
-            var connection = new Microsoft.Data.Sqlite.SqliteConnection("Filename=:memory:");
-            connection.Open();
-
-            _factory = factory.WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureServices(services =>
-                {
-                    // remove existing DbContext registrations (if any)
-                    var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<YourDbContext>));
-                    if (descriptor != null)
-                        services.Remove(descriptor);
-
-                    // add sqlite in-memory db for tests
-                    services.AddDbContext<YourDbContext>(options =>
-                    {
-                        options.UseSqlite(connection);
-                    });
-
-                    // Build the service provider and run migrations / ensure created
-                    var sp = services.BuildServiceProvider();
-                    using var scope = sp.CreateScope();
-                    var db = scope.ServiceProvider.GetRequiredService<YourDbContext>();
-                    db.Database.EnsureCreated(); // or Migrate()
-                });
-            });
-
-            _client = _factory.CreateClient();
-        }
-
-        If you choose this path, update using statements to include:
-          using Microsoft.EntityFrameworkCore;
-          using Microsoft.Extensions.DependencyInjection;
-          using System.Linq;
-        */
     }
 }
