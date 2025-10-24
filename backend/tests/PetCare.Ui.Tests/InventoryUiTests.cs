@@ -92,8 +92,7 @@ namespace PetCare.Ui.Tests
             Assert.NotNull(card);
         }
 
-        // SKIPPED - flaky E2E for demo. Will re-enable after selector/backend debug.
-        [Fact(DisplayName = "Create inventory item (happy path)", Skip = "Flaky E2E - skipped for demo. Will re-enable after selector/backend debug.")]
+        [Fact(DisplayName = "Create inventory item (happy path)")]
         public void Inventory_CreateItem_HappyPath()
         {
             try
@@ -471,59 +470,16 @@ namespace PetCare.Ui.Tests
         {
             try
             {
-                // Use a guaranteed-writable location: OS temp folder
-                var outDir = Path.Combine(Path.GetTempPath(), "PetCareUiTestArtifacts");
+                var outDir = Path.Combine(Directory.GetCurrentDirectory(), "TestResults", "Screenshots");
                 Directory.CreateDirectory(outDir);
-
                 var timestamp = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss");
                 if (_driver != null)
                 {
-                    try
-                    {
-                        // Screenshot (if supported)
-                        try
-                        {
-                            var screenshot = ((ITakesScreenshot)_driver).GetScreenshot();
-                            var screenshotPath = Path.Combine(outDir, $"{tag}_{timestamp}.png");
-                            File.WriteAllBytes(screenshotPath, screenshot.AsByteArray);
-                            Console.WriteLine($"[TESTARTIFACT] screenshot: {screenshotPath}");
-                        }
-                        catch (Exception exScreenshot)
-                        {
-                            Console.WriteLine($"[TESTARTIFACT] screenshot failed: {exScreenshot.Message}");
-                        }
-
-                        // Modal / page HTML
-                        try
-                        {
-                            var html = _driver.PageSource ?? "";
-                            var htmlPath = Path.Combine(outDir, $"{tag}_{timestamp}.html");
-                            File.WriteAllText(htmlPath, html);
-                            Console.WriteLine($"[TESTARTIFACT] page html: {htmlPath}");
-                        }
-                        catch (Exception exHtml)
-                        {
-                            Console.WriteLine($"[TESTARTIFACT] page html save failed: {exHtml.Message}");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"[TESTARTIFACT] SaveDebugArtifacts inner error: {ex.Message}");
-                    }
-                }
-                else
-                {
-                    // If driver is null, still create a small text file with the current page (none)
-                    var path = Path.Combine(outDir, $"{tag}_{timestamp}_nodriver.txt");
-                    File.WriteAllText(path, $"No driver instance. Current dir: {Directory.GetCurrentDirectory()}");
-                    Console.WriteLine($"[TESTARTIFACT] nodriver info: {path}");
+                    try { var screenshot = ((ITakesScreenshot)_driver).GetScreenshot(); File.WriteAllBytes(Path.Combine(outDir, $"{tag}_{timestamp}.png"), screenshot.AsByteArray); } catch {}
+                    try { var html = _driver.PageSource; File.WriteAllText(Path.Combine(outDir, $"{tag}_{timestamp}.html"), html); } catch {}
                 }
             }
-            catch (Exception ex)
-            {
-                // avoid throwing from diagnostics
-                Console.WriteLine($"[TESTARTIFACT] SaveDebugArtifacts failed completely: {ex.Message}");
-            }
+            catch { }
         }
     }
 }
